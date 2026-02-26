@@ -248,7 +248,7 @@ export default function CUOnlinePage(): React.ReactElement {
       </div>
 
       {/* ─── NAVBAR ──────────────────────────────────────────────────── */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+      <nav className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm ">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center">
       <Image
         src="/logo.webp"      
@@ -262,24 +262,24 @@ export default function CUOnlinePage(): React.ReactElement {
       </nav>
 
       {/* ─── HERO ────────────────────────────────────────────────────── */}
-      <section className="relative w-full min-h-[480px] md:min-h-[500px] flex items-center">
+      <section className="relative w-full h-[300px] md:h-[900px] flex items-center">
 
   {/* Background Image (behind content) */}
-  <div className="absolute  inset-0 z-0">
+  <div className="absolute inset-0 z-0">
     <Image
       src="/cuonline_hero.png"
       alt="Background"
       fill
       priority
-      className="object-cover"
+      className="object-contain md:object-cover object-center"
     />
     <div className="absolute inset-0 " />
   </div>
 
   {/* Content overlay (desktop only) */}
-  <div className="relative z-10 w-full hidden md:block">
-    <div className="max-w-7xl mx-auto px-4 py-12 w-full flex items-center justify-end">
-      <div className="bg-white rounded-2xl p-6 shadow-2xl text-gray-800 border-t-4 border-red-600 max-w-md w-full mr-8">
+  <div className="relative z-12 w-full hidden md:block">
+    <div className="max-w-7xl mx-auto px-4 py-1 w-full flex items-center justify-end">
+      <div className="bg-white  p-6 shadow-2xl text-gray-800 border-t-4 border-red-600 max-w-md w-full mr-12">
       
       <h3 className="text-gray-900 font-extrabold text-lg mb-1">
         Free Career Counselling
@@ -332,7 +332,7 @@ export default function CUOnlinePage(): React.ReactElement {
 
 {/* Mobile form below hero */}
 <section className="block md:hidden px-4 py-6">
-  <div className="bg-white rounded-2xl p-6 shadow-2xl text-gray-800 border-t-4 border-red-600 max-w-md w-full mx-auto">
+  <div className="bg-white  p-6 shadow-2xl text-gray-800 border-t-4 border-red-600 max-w-md w-full mx-auto">
     <h3 className="text-gray-900 font-extrabold text-lg mb-1">Free Career Counselling</h3>
     <p className="text-gray-500 text-xs mb-5">Fill details below — our experts will call you within 24 hrs.</p>
     <div className="space-y-3">
@@ -357,29 +357,52 @@ export default function CUOnlinePage(): React.ReactElement {
   <div className="max-w-6xl mx-auto flex flex-wrap justify-center gap-6">
 
     <img
-      src="/1.png"
+      src="/1.1.png"
       alt="img1"
       className="w-60 h-36 object-contain"
     />
 
     <img
-      src="/2.png"
+      src="/2.1.png"
       alt="img2"
       className="w-60 h-36 object-contain"
     />
 
     <img
-      src="/3.png"
+      src="/3.1.png"
       alt="img3"
       className="w-60 h-36 object-contain"
     />
 
     <img
-      src="/4.png"
+      src="/4.1.png"
       alt="img4"
       className="w-60 h-36 object-contain"
     />
 
+    <img
+      src="/1.2.png"
+      alt="img1"
+      className="w-60 h-36 object-contain"
+    />
+
+    <img
+      src="/2.2.png"
+      alt="img2"
+      className="w-60 h-36 object-contain"
+    />
+
+    <img
+      src="/3.2.png"
+      alt="img3"
+      className="w-60 h-36 object-contain"
+    />
+
+    <img
+      src="/4.2.png"
+      alt="img4"
+      className="w-60 h-36 object-contain"
+    />
   </div>
 </div>
       {/* ─── STATS ───────────────────────────────────────────────────── */}
@@ -395,7 +418,7 @@ export default function CUOnlinePage(): React.ReactElement {
   {stats.map((s) => (
     <div
       key={s.value}
-      className="group text-center bg-white rounded-2xl p-6 shadow-sm border border-gray-100 
+      className="group text-center bg-white  p-6 shadow-sm border border-gray-100 
                  hover:bg-red-600 hover:shadow-lg transition-all duration-300 cursor-pointer"
     >
       <div className="text-3xl md:text-4xl font-extrabold text-red-600 
@@ -456,7 +479,7 @@ export default function CUOnlinePage(): React.ReactElement {
           <img
             src="/5.png"
             alt="Undergraduate Programs"
-            className="rounded-2xl shadow-xl w-full object-cover"
+            className=" shadow-xl w-full object-cover"
           />
         </div>
 
@@ -465,7 +488,7 @@ export default function CUOnlinePage(): React.ReactElement {
           <div className="grid sm:grid-cols-2 gap-6">
 
             {ugPrograms.map((p) => (
-              <div key={p.title} className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-md transition">
+              <div key={p.title} className=" overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-md transition">
                 <div className="bg-red-600 text-white px-5 py-4">
                   <div className="text-lg font-extrabold">{p.title}</div>
                   <div className="text-sm opacity-90">{programFullForm(p.title)}</div>
@@ -507,7 +530,7 @@ export default function CUOnlinePage(): React.ReactElement {
           <img
             src="/6.png"
             alt="Postgraduate Programs"
-            className="rounded-2xl shadow-xl w-full object-cover"
+            className="shadow-xl w-full object-cover"
           />
         </div>
 
@@ -516,7 +539,7 @@ export default function CUOnlinePage(): React.ReactElement {
           <div className="grid sm:grid-cols-2 gap-6">
 
             {pgPrograms.map((p) => (
-              <div key={p.title} className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-md transition">
+              <div key={p.title} className=" overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-md transition">
                 <div className="bg-red-600 text-white px-5 py-4">
                   <div className="text-lg font-extrabold">{p.title}</div>
                   <div className="text-sm opacity-90">{programFullForm(p.title)}</div>
@@ -727,53 +750,51 @@ export default function CUOnlinePage(): React.ReactElement {
         </div>
       </section>
 
-      {/* ─── FOOTER ──────────────────────────────────────────────────── */}
-      <footer className="bg-white text-black py-10">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="bg-white rounded-2xl shadow-md p-6 flex justify-center items-center">
+      
+      <footer className="bg-gray-100 text-black pt-10">
+
+  {/* Top Footer Row */}
+  <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8 items-center">
+
+    {/* Left Logo */}
+    <div className="flex justify-center md:justify-start">
       <img
         src="/logo.webp"   
-        alt="testimonial"
-        className="w-auto h-auto object-contain"
+        alt="CU Online"
+        className="h-16 w-auto object-contain"
       />
     </div>
-            </div>
-            <p className="text-gray-400 text-xs leading-relaxed mb-4">
-              India&apos;s top-ranked deemed university offering UGC-entitled online degrees
-              with Harvard &amp; KPMG empowered curriculum.
-            </p>
-            <CTABtn onClick={() => openModal()} className="px-4 py-2 rounded-lg text-xs w-full">
-              Enquire Now
-            </CTABtn>
-          </div>
 
-       
-          
-        </div>
-         <div className="bg-gray-100 py-6">
-  <div className="max-w-6xl mx-auto px-4 text-center text-gray-600 text-sm leading-relaxed">
+    {/* Center Address */}
+    <div className="flex items-start gap-3 text-center md:text-left justify-center">
+      <div className="text-3xl text-gray-500">📍</div>
+      <div className="text-sm text-gray-700 leading-relaxed">
+        <p className="font-semibold text-blue-600">Chandigarh University</p>
+        <p>Address: NH-05 Chandigarh–Ludhiana</p>
+        <p>Highway, Mohali, Punjab (INDIA)</p>
+      </div>
+    </div>
 
-    <p className="mb-3">
-      Disclaimer: We act as a marketing service partner only. Chandigarh University holds full rights to request change or removal of any non-relevant content. Images used are for illustrative purposes and do not directly represent the respective colleges or universities.
-    </p>
+    {/* Right Buttons */}
+    <div className="flex flex-col gap-4 items-center md:items-end">
+      <button onClick={() => openModal()} className="bg-red-600 text-white px-10 py-3 rounded-lg font-semibold hover:bg-red-700 transition">
+        eSanad
+      </button>
 
-    <p className="mb-2">
-      Privacy-Policy & terms-conditions
-    </p>
-
-    <p className="text-xs text-gray-500">
-      © 2025 degreeadmission.online - All Right Reserved.
-    </p>
+      <button onClick={() => openModal()} className="bg-red-600 text-white px-10 py-3 rounded-lg font-semibold hover:bg-red-700 transition">
+        Idol DMC Request
+      </button>
+    </div>
 
   </div>
-</div>
-        <div className="border-t border-gray-800 mt-8 pt-5 text-center text-gray-600 text-xs">
-          © 2025 Chandigarh University Online. All Rights Reserved. | Privacy Policy | Terms &amp; Conditions
-        </div>
-      </footer>
+
+
+  {/* Bottom Copyright */}
+  <div className="bg-gray-200 mt-8 py-5 text-center text-gray-600 text-sm">
+    © 2025 Chandigarh University Online. All Rights Reserved.
+  </div>
+
+</footer>
     </div>
   );
 }
