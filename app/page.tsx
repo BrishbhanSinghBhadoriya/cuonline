@@ -68,32 +68,34 @@ const stats: Stat[] = [
 ];
 const ugPrograms: Program[] = [
   {
-    title: "Online BCA",
-    eligibility: "10+2 (Any Board)",
-    duration: "3 years",
-    fee: "₹ 32,316",
-    originalFee: "₹ 43,000",
-  },
-  {
     title: "Online BBA",
     eligibility: "10+2 (Any Board)",
     duration: "3 years",
-    fee: "₹ 29,167",
-    originalFee: "₹ 21,875",
+    fee: "₹ 21,875",
+    originalFee: "₹ 29,167",
   },
+ 
+  {
+    title: "Online BCA",
+    eligibility: "10+2 (Any Board)",
+    duration: "3 years",
+    fee: "₹ 22,125",
+    originalFee: "₹ 29,500",
+  },
+ 
   {
     title: "Online BA-JMC",
     eligibility: "10+2 (Any Board)",
     duration: "3 years",
-    fee: "₹ 11,900",
-    originalFee: "₹ 14,875",
+    fee: "₹ 21,875",
+    originalFee: "₹ 29,167",
   },
    {
     title: "Online BBA Business Analytics",
     eligibility: "10+2 (Any Board)",
     duration: "3 years",
-    fee: "₹ 11,900",
-    originalFee: "₹ 14,875",
+    fee: "₹ 27,550",
+    originalFee: "₹ 31,667",
   },
 ];
  const pgPrograms: Program[] = [
@@ -101,37 +103,44 @@ const ugPrograms: Program[] = [
     title: "Online MBA",
     eligibility: "Bachelors (Any Discipline)",
     duration: "2 years",
-    fee: "₹ 60,816",
-    originalFee: "₹ 81,000",
+    fee: "₹ 41,250",
+    originalFee: "₹ 55,000",
     tag: "BESTSELLER",
   },
   {
     title: "Online MBA Business Analytics",
     eligibility: "Bachelors (Any Discipline)",
     duration: "2 years",
-    fee: "₹ 21,448",
-    originalFee: "₹ 28,600",
+    fee: "₹ 45,000",
+    originalFee: "₹ 50,500",
   },
   {
     title: "Online MCA",
     eligibility: "Master of Computer Application",
     duration: "2 years",
-    fee: "₹ 56,063",
-    originalFee: "₹ 74,750",
+    fee: "₹ 29,063",
+    originalFee: "₹ 38,750",
   },
   {
     title: "Online MA English",
     eligibility: "Bachelors in English Disciplines",
     duration: "2 years",
-    fee: "₹ 28,500",
-    originalFee: "₹ 38,000",
+    fee: "₹ 18,750",
+    originalFee: "₹ 25,000",
+  },
+   {
+    title: "Online MA Economics",
+    eligibility: "Bachelors in Economics",
+    duration: "2 years",
+    fee: "₹ 18,750",
+    originalFee: "₹ 25,000",
   },
   {
     title: "Online M.Sc Data Science",
     eligibility: "Bachelors in Science/IT",
     duration: "2 years",
-    fee: "₹ 57,500",
-    originalFee: "₹ 76,666",
+    fee: "₹ 25,750",
+    originalFee: "₹ 36,667",
   },
   {
     title: "Online M.Sc Mathematics",
@@ -141,11 +150,11 @@ const ugPrograms: Program[] = [
     originalFee: "₹ 25,000",
   },
   {
-    title: "Online M.Com",
-    eligibility: "Bachelors in Commerce",
-    duration: "2 years",
-    fee: "₹ 41,040",
-    originalFee: "₹ 54,720",
+    title: "Online MA-JMC",
+    eligibility: "10+2 (Any Board)",
+    duration: "3 years",
+    fee: "₹ 21,188",
+    originalFee: "₹ 36,250",
   },
 ];
 
@@ -215,6 +224,102 @@ export default function CUOnlinePage(): React.ReactElement {
   const [activeTab,      setActiveTab]      = useState<string>("All");
   const [modalOpen,      setModalOpen]      = useState<boolean>(false);
   const [selectedProgram,setSelectedProgram]= useState<string>("");
+  const [heroData, setHeroData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    program: "",
+    state: "",
+  });
+  const [heroSubmitting, setHeroSubmitting] = useState(false);
+  const [heroError, setHeroError] = useState<string>("");
+  const [heroSuccess, setHeroSuccess] = useState<string>("");
+
+  const heroProgramOptions = [
+    "MBA",
+    "MCA",
+    "M.Sc Data Science",
+    "BCA",
+    "BBA",
+    "MA English",
+    "BA",
+    "M.Com",
+    "M.Sc Mathematics",
+  ];
+
+  const heroStateOptions = [
+    "Andhra Pradesh",
+    "Assam",
+    "Bihar",
+    "Chandigarh",
+    "Delhi",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jammu & Kashmir",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Tamil Nadu",
+    "Telangana",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal",
+  ];
+
+  const updateHero =
+    (field: keyof typeof heroData) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      setHeroData((d) => ({ ...d, [field]: e.target.value }));
+
+  const validateHero = (): string | null => {
+    if (!heroData.name.trim() || heroData.name.trim().length < 2) return "Enter a valid name";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(heroData.email.trim())) return "Enter a valid email";
+    if (!/^[6-9]\d{9}$/.test(heroData.phone.replace(/\s/g, ""))) return "Enter a valid 10-digit mobile";
+    if (!heroData.program.trim()) return "Select a program";
+    if (!heroData.state.trim()) return "Select a state";
+    return null;
+  };
+
+  const submitHero = async (): Promise<void> => {
+    setHeroError("");
+    setHeroSuccess("");
+    const v = validateHero();
+    if (v) {
+      setHeroError(v);
+      return;
+    }
+    setHeroSubmitting(true);
+    try {
+      const res = await fetch("/api/enquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: heroData.name.trim(),
+          email: heroData.email.trim(),
+          phone: heroData.phone.trim(),
+          program: heroData.program.trim(),
+          state: heroData.state.trim(),
+          message: "",
+        }),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(typeof j.error === "string" ? j.error : "Failed to submit");
+      }
+      setHeroSuccess("Enquiry submitted successfully");
+      setHeroData({ name: "", email: "", phone: "", program: "", state: "" });
+    } catch (e) {
+      setHeroError(e instanceof Error ? e.message : "Submission failed");
+    } finally {
+      setHeroSubmitting(false);
+    }
+  };
 
   // ── Modal helpers ──────────────────────────────────────────────────
   const openModal = useCallback((program = ""): void => {
@@ -289,35 +394,65 @@ export default function CUOnlinePage(): React.ReactElement {
       </p>
 
       <div className="space-y-3">
+            {heroError && <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-3 py-2 text-xs">{heroError}</div>}
+            {heroSuccess && <div className="bg-green-50 border border-green-200 text-green-700 rounded-xl px-3 py-2 text-xs">{heroSuccess}</div>}
 
         <input
           type="text"
           placeholder="Full Name *"
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
+              value={heroData.name}
+              onChange={updateHero("name")}
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
         />
 
         <input
           type="email"
           placeholder="Email Address *"
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
+              value={heroData.email}
+              onChange={updateHero("email")}
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
         />
 
         <input
           type="tel"
           placeholder="Phone Number *"
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
+              value={heroData.phone}
+              onChange={updateHero("phone")}
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
         />
 
-        <select className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm">
-          <option>Select Program *</option>
+            <select
+              value={heroData.program}
+              onChange={updateHero("program")}
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
+            >
+              <option value="">Select Program *</option>
+              {heroProgramOptions.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
         </select>
 
-        <select className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm">
-          <option>Select State *</option>
+            <select
+              value={heroData.state}
+              onChange={updateHero("state")}
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
+            >
+              <option value="">Select State *</option>
+              {heroStateOptions.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
         </select>
 
-        <button className="w-full py-3 rounded-xl text-sm font-bold bg-red-600 text-white hover:bg-red-700 transition">
-          Register Now — It&apos;s Free →
+            <button
+              disabled={heroSubmitting}
+              onClick={submitHero}
+              className="w-full py-3 rounded-xl text-sm font-bold bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 transition"
+            >
+              {heroSubmitting ? "Submitting..." : "Register Now — It&apos;s Free →"}
         </button>
 
         <p className="text-gray-400 text-xs text-center">
@@ -336,17 +471,25 @@ export default function CUOnlinePage(): React.ReactElement {
     <h3 className="text-gray-900 font-extrabold text-lg mb-1">Free Career Counselling</h3>
     <p className="text-gray-500 text-xs mb-5">Fill details below — our experts will call you within 24 hrs.</p>
     <div className="space-y-3">
-      <input type="text" placeholder="Full Name *" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" />
-      <input type="email" placeholder="Email Address *" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" />
-      <input type="tel" placeholder="Phone Number *" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" />
-      <select className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm">
-        <option>Select Program *</option>
+      {heroError && <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-3 py-2 text-xs">{heroError}</div>}
+      {heroSuccess && <div className="bg-green-50 border border-green-200 text-green-700 rounded-xl px-3 py-2 text-xs">{heroSuccess}</div>}
+      <input type="text" placeholder="Full Name *" value={heroData.name} onChange={updateHero("name")} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" />
+      <input type="email" placeholder="Email Address *" value={heroData.email} onChange={updateHero("email")} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" />
+      <input type="tel" placeholder="Phone Number *" value={heroData.phone} onChange={updateHero("phone")} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" />
+      <select value={heroData.program} onChange={updateHero("program")} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm">
+        <option value="">Select Program *</option>
+        {heroProgramOptions.map((p) => (
+          <option key={p} value={p}>{p}</option>
+        ))}
       </select>
-      <select className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm">
-        <option>Select State *</option>
+      <select value={heroData.state} onChange={updateHero("state")} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm">
+        <option value="">Select State *</option>
+        {heroStateOptions.map((s) => (
+          <option key={s} value={s}>{s}</option>
+        ))}
       </select>
-      <button className="w-full py-3 rounded-xl text-sm font-bold bg-red-600 text-white hover:bg-red-700 transition">
-        Register Now — It&apos;s Free →
+      <button disabled={heroSubmitting} onClick={submitHero} className="w-full py-3 rounded-xl text-sm font-bold bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 transition">
+        {heroSubmitting ? "Submitting..." : "Register Now — It&apos;s Free →"}
       </button>
       <p className="text-gray-400 text-xs text-center">🔒 Your data is 100% secure. No spam.</p>
     </div>
@@ -549,7 +692,7 @@ export default function CUOnlinePage(): React.ReactElement {
                   <div className="text-sm text-purple-700 mb-3">After 25% Early Bird Discount on Programme Sem Fee</div>
                   <div className="flex items-center gap-3">
                     <span className="text-red-600 line-through text-sm">{p.originalFee}</span>
-                    <span className="text_black font-extrabold text-base">{p.fee}</span>
+                    <span className="text-black font-extrabold text-base">{p.fee}</span>
                     <CTABtn onClick={() => openModal(p.title)} className="px-4 py-2 rounded-full text-xs">
                       Apply Now
                     </CTABtn>
