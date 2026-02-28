@@ -1,21 +1,18 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-poppins",
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.onlinecu.in"), // Assuming this is the base URL
   title: {
-    default: "CU Online Admissions 2026 | Apply for UGC Entitled Online Degrees",
+    default: "CU Online Admissions 2026 | Study UGC Entitled Online Degrees",
     template: "%s | CU Online Admissions 2026",
   },
   description:
@@ -25,12 +22,14 @@ export const metadata: Metadata = {
     "Admissions 2026",
     "Online MBA 2026",
     "Online MCA 2026",
-    "Online BBA",
-    "Online BCA",
-    "UGC entitled online degree",
-    "Apply online 2026",
-    "Distance learning 2026",
-    "Online university India",
+    "Online BBA Admissions",
+    "Online BCA Course",
+    "UGC entitled online degree India",
+    "Apply online 2026 Chandigarh University",
+    "Distance learning 2026 Chandigarh",
+    "Online university India 2026",
+    "Best Online MBA program 2026",
+    "Chandigarh University Online Learning",
   ],
   alternates: {
     canonical: "/",
@@ -118,47 +117,54 @@ export default function RootLayout({
           }}
         />
         <Script
-          id="faq-schema"
+          id="course-schema"
           type="application/ld+json"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "FAQPage",
-              mainEntity: [
+              "@type": "ItemList",
+              "itemListElement": [
                 {
-                  "@type": "Question",
-                  name: "Are CU Online Admissions 2026 open?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text:
-                      "Yes. CU Online Admissions 2026 are open for MBA, MCA, BBA, BCA, MA, M.Com, and M.Sc programs.",
-                  },
+                  "@type": "Course",
+                  "position": 1,
+                  "name": "Online MBA",
+                  "description": "UGC entitled online MBA program with flexible learning.",
+                  "provider": {
+                    "@type": "CollegeOrUniversity",
+                    "name": "Chandigarh University Online",
+                    "sameAs": "https://www.onlinecu.in"
+                  }
                 },
                 {
-                  "@type": "Question",
-                  name: "Are CU Online degrees UGC entitled?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Yes. CU Online offers UGC-entitled online degree programs.",
-                  },
+                  "@type": "Course",
+                  "position": 2,
+                  "name": "Online MCA",
+                  "description": "Advanced online MCA program for technology professionals.",
+                  "provider": {
+                    "@type": "CollegeOrUniversity",
+                    "name": "Chandigarh University Online",
+                    "sameAs": "https://www.onlinecu.in"
+                  }
                 },
                 {
-                  "@type": "Question",
-                  name: "How do I apply for admission in 2026?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text:
-                      "Fill the enquiry form on the website and our counsellor will contact you within 24 hours to guide you through the application process.",
-                  },
-                },
-              ],
+                  "@type": "Course",
+                  "position": 3,
+                  "name": "Online BBA",
+                  "description": "Comprehensive online BBA program for future business leaders.",
+                  "provider": {
+                    "@type": "CollegeOrUniversity",
+                    "name": "Chandigarh University Online",
+                    "sameAs": "https://www.onlinecu.in"
+                  }
+                }
+              ]
             }),
           }}
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${poppins.variable} font-sans antialiased`}
       >
         {children}
       </body>

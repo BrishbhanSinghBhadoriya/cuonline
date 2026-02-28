@@ -9,7 +9,10 @@ interface EnquiryPayload {
   email: string;
   phone: string;
   program: string;
-  state: string;
+  state?: string;
+  city: string;
+  dob: string;
+  passed12th: boolean;
   message?: string;
 }
 
@@ -23,8 +26,12 @@ function validatePayload(data: EnquiryPayload): string | null {
     return "Valid 10-digit Indian mobile number is required";
   if (!data.program?.trim())
     return "Program selection is required";
-  if (!data.state?.trim())
-    return "State selection is required";
+  if (!data.city?.trim())
+    return "City selection is required";
+  if (!data.dob?.trim())
+    return "Date of birth is required";
+  if (data.passed12th === undefined)
+    return "12th standard confirmation is required";
   return null;
 }
 
@@ -41,14 +48,16 @@ function adminEmailHTML(data: EnquiryPayload, leadId: string): string {
       <div style="padding:24px;">
         <table style="width:100%;border-collapse:collapse;">
           ${[
-            ["👤 Name", data.name],
-            ["📧 Email", data.email],
-            ["📞 Phone", `+91 ${data.phone}`],
-            ["🎓 Program", data.program],
-            ["📍 State", data.state],
-            ["💬 Message", data.message || "—"],
-            ["🕐 Time (IST)", new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })],
-          ].map(([label, value]) => `
+      ["👤 Name", data.name],
+      ["📧 Email", data.email],
+      ["📞 Phone", `+91 ${data.phone}`],
+      ["🎓 Program", data.program],
+      ["📍 City", data.city],
+      ["📅 DOB", data.dob],
+      ["✅ Passed 12th", data.passed12th ? "Yes" : "No"],
+      ["💬 Message", data.message || "—"],
+      ["🕐 Time (IST)", new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })],
+    ].map(([label, value]) => `
             <tr style="border-bottom:1px solid #f0f0f0;">
               <td style="padding:10px 8px;font-weight:bold;color:#666;font-size:13px;width:38%;">${label}</td>
               <td style="padding:10px 8px;color:#222;font-size:14px;">${value}</td>
@@ -93,13 +102,13 @@ function studentEmailHTML(data: EnquiryPayload): string {
           <p style="margin:0 0 10px;font-weight:bold;color:#dc2626;font-size:14px;">📋 Your Enquiry Details:</p>
           <table style="width:100%;">
             <tr><td style="color:#666;font-size:13px;padding:3px 0">Program:</td><td style="font-weight:bold;font-size:13px;">${data.program}</td></tr>
-            <tr><td style="color:#666;font-size:13px;padding:3px 0">State:</td><td style="font-weight:bold;font-size:13px;">${data.state}</td></tr>
+            <tr><td style="color:#666;font-size:13px;padding:3px 0">City:</td><td style="font-weight:bold;font-size:13px;">${data.city}</td></tr>
             <tr><td style="color:#666;font-size:13px;padding:3px 0">Email:</td><td style="font-weight:bold;font-size:13px;">${data.email}</td></tr>
           </table>
         </div>
         ${["🎓 UGC Entitled Degrees", "📚 Harvard & KPMG Curriculum", "💰 25% Scholarship Available", "💼 500+ Placement Partners"].map(
-          (item) => `<div style="background:#f9fafb;border-radius:8px;padding:10px 14px;margin-bottom:8px;color:#444;font-size:13px;">${item}</div>`
-        ).join("")}
+    (item) => `<div style="background:#f9fafb;border-radius:8px;padding:10px 14px;margin-bottom:8px;color:#444;font-size:13px;">${item}</div>`
+  ).join("")}
       </div>
       <div style="background:#dc2626;padding:16px;text-align:center;">
         <p style="margin:0;color:white;font-size:13px;">
@@ -125,7 +134,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       email: body.email.trim().toLowerCase(),
       phone: body.phone.trim().replace(/\s/g, ""),
       program: body.program.trim(),
-      state: body.state.trim(),
+      state: body.state?.trim() || "",
+      city: body.city.trim(),
+      dob: body.dob.trim(),
+      passed12th: body.passed12th,
       message: body.message?.trim() || "",
     };
 

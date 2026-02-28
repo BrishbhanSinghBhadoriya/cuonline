@@ -6,7 +6,10 @@ export interface IEnquiry extends Document {
   email: string;
   phone: string;
   program: string;
-  state: string;
+  state?: string;
+  city: string;
+  dob: string;
+  passed12th: boolean;
   message?: string;
   status: "new" | "contacted" | "enrolled" | "not_interested";
   source: string;
@@ -44,8 +47,21 @@ const EnquirySchema = new Schema<IEnquiry>(
     },
     state: {
       type: String,
-      required: [true, "State is required"],
       trim: true,
+    },
+    city: {
+      type: String,
+      required: [true, "City is required"],
+      trim: true,
+    },
+    dob: {
+      type: String,
+      required: [true, "Date of birth is required"],
+      trim: true,
+    },
+    passed12th: {
+      type: Boolean,
+      required: [true, "Checkbox confirmation is required"],
     },
     message: {
       type: String,
