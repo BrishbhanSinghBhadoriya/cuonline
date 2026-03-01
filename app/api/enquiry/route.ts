@@ -116,7 +116,6 @@ function studentEmailHTML(data: EnquiryPayload): string {
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body: EnquiryPayload = await request.json();
-    console.log("[API Log]: Received Enquiry Payload:", body);
 
     const validationError = validatePayload(body);
     if (validationError) {
@@ -144,8 +143,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       await connectDB();
 
       // DIAGNOSTIC: Log the schema of the model to see if it still expects dob/passed12th
-      const schemaPaths = Object.keys(Enquiry.schema.paths);
-      console.log("[API Log]: Enquiry Schema Paths:", schemaPaths);
+      // const schemaPaths = Object.keys(Enquiry.schema.paths);
+      // console.log("[API Log]: Enquiry Schema Paths:", schemaPaths);
 
       const enquiry = await Enquiry.create({
         ...data,
@@ -154,7 +153,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         ipAddress,
       });
 
-      console.log("[API Log]: Enquiry Document Created in DB:", enquiry._id);
       leadId = (enquiry._id as unknown as string).toString();
       dbSaved = true;
     } catch (dbErr) {

@@ -9,8 +9,8 @@ declare global {
   var mongoose: MongooseCache | undefined;
 }
 
-const MONGODB_URI = (process.env.MONGODB_URI || process.env.MONGO_URI || "mongodb+srv://brishbhansinghraja_db_user:jJLdYlUNv9D1Zhzh@cluster0.mfjnarh.mongodb.net/cuonline?appName=Cluster0") as string;
-const DB_NAME = process.env.DB_NAME || "cuonline";
+const MONGODB_URI = (process.env.MONGODB_URI || process.env.MONGO_URI) as string;
+const DB_NAME = process.env.DB_NAME;
 
 console.log("[MongoDB Log]: Connecting to Cluster0, DB:", DB_NAME);
 
