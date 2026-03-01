@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Props {
   isOpen: boolean;
@@ -13,14 +14,12 @@ interface FormData {
   phone: string;
   program: string;
   city: string;
-  dobDay: string;
-  dobMonth: string;
-  dobYear: string;
-  passed12th: boolean;
+
   message: string;
 }
 
 export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props): React.ReactElement | null {
+  const router = useRouter();
   const programOptions = useMemo(
     () => [
       "MBA",
@@ -47,10 +46,6 @@ export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props)
     phone: "",
     program: defaultProgram || "",
     city: "",
-    dobDay: "",
-    dobMonth: "",
-    dobYear: "",
-    passed12th: false,
     message: "",
   });
 
@@ -77,8 +72,6 @@ export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props)
     if (!/^[6-9]\d{9}$/.test(data.phone.replace(/\s/g, ""))) return "Enter a valid 10-digit mobile";
     if (!data.city.trim()) return "Enter your city";
     if (!data.program.trim()) return "Select a program";
-    if (!data.dobDay || !data.dobMonth || !data.dobYear) return "Select date of birth";
-    if (!data.passed12th) return "Please confirm you have passed 12th standard";
     return null;
   };
 
@@ -101,8 +94,6 @@ export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props)
           phone: data.phone.trim(),
           program: data.program.trim(),
           city: data.city.trim(),
-          dob: `${data.dobDay}-${data.dobMonth}-${data.dobYear}`,
-          passed12th: data.passed12th,
           message: data.message.trim(),
         }),
       });
@@ -113,7 +104,8 @@ export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props)
       setSuccess("Enquiry submitted successfully");
       setTimeout(() => {
         onClose();
-      }, 1200);
+        router.push("/thank-you");
+      }, 1000);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Submission failed");
     } finally {
@@ -201,64 +193,14 @@ export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props)
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-500">Date of birth?</label>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="relative">
-                    <select
-                      value={data.dobDay}
-                      onChange={update("dobDay")}
-                      className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-500 transition-all text-gray-700 bg-white"
-                    >
-                      <option value="">DD</option>
-                      {days.map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-400 text-[10px]">▼</div>
-                  </div>
-                  <div className="relative">
-                    <select
-                      value={data.dobMonth}
-                      onChange={update("dobMonth")}
-                      className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-500 transition-all text-gray-700 bg-white"
-                    >
-                      <option value="">MM</option>
-                      {months.map((m, i) => <option key={m} value={(i + 1).toString().padStart(2, '0')}>{m}</option>)}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-400 text-[10px]">▼</div>
-                  </div>
-                  <div className="relative">
-                    <select
-                      value={data.dobYear}
-                      onChange={update("dobYear")}
-                      className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-500 transition-all text-gray-700 bg-white"
-                    >
-                      <option value="">YYYY</option>
-                      {years.map(y => <option key={y} value={y}>{y}</option>)}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-400 text-[10px]">▼</div>
-                  </div>
-                </div>
-              </div>
 
-              <div className="flex items-start gap-3 py-2">
-                <input
-                  type="checkbox"
-                  id="confirm-12th"
-                  checked={data.passed12th}
-                  onChange={update("passed12th")}
-                  className="mt-1 w-5 h-5 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 transition-colors cursor-pointer"
-                />
-                <label htmlFor="confirm-12th" className="text-base md:text-lg text-gray-800 font-medium cursor-pointer leading-tight">
-                  I Confirm I Have Passed 12th Standard/Diploma.
-                </label>
-              </div>
 
               <button
                 disabled={submitting}
                 onClick={submit}
                 className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white font-extrabold px-4 py-4 rounded-xl text-xl md:text-2xl shadow-lg hover:shadow-red-200 transition-all transform active:scale-[0.98]"
               >
-                {submitting ? "Processing..." : "Register Now"}
+                {submitting ? "Your Enquiry are submitting..." : "Register Now"}
               </button>
 
               <div className="text-center pt-6">

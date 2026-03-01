@@ -10,7 +10,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.onlinecu.in"), // Assuming this is the base URL
+  metadataBase: new URL("https://www.onlinecu.in"),
   title: {
     default: "CU Online Admissions 2026 | Study UGC Entitled Online Degrees",
     template: "%s | CU Online Admissions 2026",
@@ -163,10 +163,23 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body
-        className={`${poppins.variable} font-sans antialiased`}
-      >
+      <body className={`${poppins.variable} font-sans antialiased`}>
         {children}
+
+        {/* ✅ CU Online Google Ads Scripts - AW-XXXXXXXXX replace karo */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-17973307328"
+          strategy="afterInteractive"
+        />
+        <Script id="google-ads" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-17973307328');
+          `}
+        </Script>
+
       </body>
     </html>
   );

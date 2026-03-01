@@ -11,8 +11,6 @@ interface EnquiryPayload {
   program: string;
   state?: string;
   city: string;
-  dob: string;
-  passed12th: boolean;
   message?: string;
 }
 
@@ -28,10 +26,6 @@ function validatePayload(data: EnquiryPayload): string | null {
     return "Program selection is required";
   if (!data.city?.trim())
     return "City selection is required";
-  if (!data.dob?.trim())
-    return "Date of birth is required";
-  if (data.passed12th === undefined)
-    return "12th standard confirmation is required";
   return null;
 }
 
@@ -53,8 +47,7 @@ function adminEmailHTML(data: EnquiryPayload, leadId: string): string {
       ["📞 Phone", `+91 ${data.phone}`],
       ["🎓 Program", data.program],
       ["📍 City", data.city],
-      ["📅 DOB", data.dob],
-      ["✅ Passed 12th", data.passed12th ? "Yes" : "No"],
+
       ["💬 Message", data.message || "—"],
       ["🕐 Time (IST)", new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })],
     ].map(([label, value]) => `
@@ -123,6 +116,7 @@ function studentEmailHTML(data: EnquiryPayload): string {
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body: EnquiryPayload = await request.json();
+    console.log("[API Log]: Received Enquiry Payload:", body);
 
     const validationError = validatePayload(body);
     if (validationError) {
@@ -136,8 +130,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       program: body.program.trim(),
       state: body.state?.trim() || "",
       city: body.city.trim(),
-      dob: body.dob.trim(),
-      passed12th: body.passed12th,
       message: body.message?.trim() || "",
     };
 
@@ -151,6 +143,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
       await connectDB();
 
+      // DIAGNOSTIC: Log the schema of the model to see if it still expects dob/passed12th
+      const schemaPaths = Object.keys(Enquiry.schema.paths);
+      console.log("[API Log]: Enquiry Schema Paths:", schemaPaths);
+
       const enquiry = await Enquiry.create({
         ...data,
         status: "new",
@@ -158,11 +154,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         ipAddress,
       });
 
+      console.log("[API Log]: Enquiry Document Created in DB:", enquiry._id);
       leadId = (enquiry._id as unknown as string).toString();
       dbSaved = true;
     } catch (dbErr) {
       console.error("[Enquiry DB Save Error]:", dbErr);
-      leadId = "N/A";
+      return NextResponse.json({
+        error: "Failed to save enquiry to database.",
+        details: dbErr instanceof Error ? dbErr.message : String(dbErr)
+      }, { status: 500 });
     }
 
     const enableEmails = process.env.SEND_EMAILS === "true";
@@ -195,7 +195,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     return NextResponse.json(
-      { success: true, message: dbSaved ? "Enquiry submitted successfully!" : "Enquiry received. Database not configured.", leadId },
+      { success: true, message: "Enquiry submitted successfully!", leadId },
       { status: 201 }
     );
   } catch (error: unknown) {

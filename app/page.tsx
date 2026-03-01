@@ -1,5 +1,6 @@
 "use client";
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Enquiry from "@/components/Enquiry";
 import Image from "next/image";
 // ── Types ──────────────────────────────────────────────────────────────
@@ -225,6 +226,7 @@ function CTABtn({ onClick, children, className = "" }: CTABtnProps): React.React
 
 // ── Main Component ──────────────────────────────────────────────────────
 export default function CUOnlinePage(): React.ReactElement {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<string>("All");
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedProgram, setSelectedProgram] = useState<string>("");
@@ -234,10 +236,6 @@ export default function CUOnlinePage(): React.ReactElement {
     phone: "",
     program: "",
     city: "",
-    dobDay: "",
-    dobMonth: "",
-    dobYear: "",
-    passed12th: false,
   });
   const [heroSubmitting, setHeroSubmitting] = useState(false);
   const [heroError, setHeroError] = useState<string>("");
@@ -268,8 +266,6 @@ export default function CUOnlinePage(): React.ReactElement {
     if (!/^[6-9]\d{9}$/.test(heroData.phone.replace(/\s/g, ""))) return "Enter a valid 10-digit mobile";
     if (!heroData.city.trim()) return "Enter your city";
     if (!heroData.program.trim()) return "Select a program";
-    if (!heroData.dobDay || !heroData.dobMonth || !heroData.dobYear) return "Select date of birth";
-    if (!heroData.passed12th) return "Please confirm you have passed 12th standard";
     return null;
   };
 
@@ -292,8 +288,6 @@ export default function CUOnlinePage(): React.ReactElement {
           phone: heroData.phone.trim(),
           program: heroData.program.trim(),
           city: heroData.city.trim(),
-          dob: `${heroData.dobDay}-${heroData.dobMonth}-${heroData.dobYear}`,
-          passed12th: heroData.passed12th,
           message: "",
         }),
       });
@@ -302,7 +296,10 @@ export default function CUOnlinePage(): React.ReactElement {
         throw new Error(typeof j.error === "string" ? j.error : "Failed to submit");
       }
       setHeroSuccess("Enquiry submitted successfully");
-      setHeroData({ name: "", email: "", phone: "", program: "", city: "", dobDay: "", dobMonth: "", dobYear: "", passed12th: false });
+      setHeroData({ name: "", email: "", phone: "", program: "", city: "" });
+      setTimeout(() => {
+        router.push("/thank-you");
+      }, 1000);
     } catch (e) {
       setHeroError(e instanceof Error ? e.message : "Submission failed");
     } finally {
@@ -430,43 +427,15 @@ export default function CUOnlinePage(): React.ReactElement {
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
                 />
 
-                <div className="space-y-1">
-                  <label className="text-[10px] font-medium text-gray-500 ml-1">Date of birth?</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    <select value={heroData.dobDay} onChange={updateHero("dobDay")} className="border border-gray-200 rounded-xl px-2 py-2 text-xs bg-white">
-                      <option value="">DD</option>
-                      {Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0')).map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
-                    <select value={heroData.dobMonth} onChange={updateHero("dobMonth")} className="border border-gray-200 rounded-xl px-2 py-2 text-xs bg-white">
-                      <option value="">MM</option>
-                      {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m, i) => <option key={m} value={(i + 1).toString().padStart(2, '0')}>{m}</option>)}
-                    </select>
-                    <select value={heroData.dobYear} onChange={updateHero("dobYear")} className="border border-gray-200 rounded-xl px-2 py-2 text-xs bg-white">
-                      <option value="">YYYY</option>
-                      {Array.from({ length: 60 }, (_, i) => (new Date().getFullYear() - 16 - i).toString()).map(y => <option key={y} value={y}>{y}</option>)}
-                    </select>
-                  </div>
-                </div>
 
-                <div className="flex items-start gap-2 py-1">
-                  <input
-                    type="checkbox"
-                    id="hero-confirm-12th"
-                    checked={heroData.passed12th}
-                    onChange={updateHero("passed12th")}
-                    className="mt-1 w-4 h-4 text-red-600 rounded cursor-pointer"
-                  />
-                  <label htmlFor="hero-confirm-12th" className="text-[11px] text-gray-700 font-medium cursor-pointer leading-tight">
-                    I Confirm I Have Passed 12th Standard/Diploma.
-                  </label>
-                </div>
+
 
                 <button
                   disabled={heroSubmitting}
                   onClick={submitHero}
                   className="w-full py-3 rounded-xl text-sm font-bold bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 transition"
                 >
-                  {heroSubmitting ? "Submitting..." : "Register Now — It's Free →"}
+                  {heroSubmitting ? "Your Enquiry are submitting..." : "Register Now — It's Free →"}
                 </button>
 
                 <p className="text-gray-400 text-xs text-center">
@@ -497,39 +466,8 @@ export default function CUOnlinePage(): React.ReactElement {
               ))}
             </select>
             <input type="text" placeholder="Enter Your City *" value={heroData.city} onChange={updateHero("city")} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm" />
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-medium text-gray-400 ml-1">Date of birth?</label>
-              <div className="grid grid-cols-3 gap-2">
-                <select value={heroData.dobDay} onChange={updateHero("dobDay")} className="border border-gray-200 rounded-xl px-2 py-2 text-xs bg-white">
-                  <option value="">DD</option>
-                  {Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0')).map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
-                <select value={heroData.dobMonth} onChange={updateHero("dobMonth")} className="border border-gray-200 rounded-xl px-2 py-2 text-xs bg-white">
-                  <option value="">MM</option>
-                  {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m, i) => <option key={m} value={(i + 1).toString().padStart(2, '0')}>{m}</option>)}
-                </select>
-                <select value={heroData.dobYear} onChange={updateHero("dobYear")} className="border border-gray-200 rounded-xl px-2 py-2 text-xs bg-white">
-                  <option value="">YYYY</option>
-                  {Array.from({ length: 60 }, (_, i) => (new Date().getFullYear() - 16 - i).toString()).map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-2 py-1">
-              <input
-                type="checkbox"
-                id="hero-mobile-confirm-12th"
-                checked={heroData.passed12th}
-                onChange={updateHero("passed12th")}
-                className="mt-1 w-4 h-4 text-red-600 rounded cursor-pointer"
-              />
-              <label htmlFor="hero-mobile-confirm-12th" className="text-[11px] text-gray-700 font-medium cursor-pointer leading-tight">
-                I Confirm I Have Passed 12th Standard/Diploma.
-              </label>
-            </div>
             <button disabled={heroSubmitting} onClick={submitHero} className="w-full py-3 rounded-xl text-sm font-bold bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 transition">
-              {heroSubmitting ? "Submitting..." : "Register Now — It's Free →"}
+              {heroSubmitting ? "Your Enquiry are submitting..." : "Register Now — It's Free →"}
             </button>
             <p className="text-gray-400 text-xs text-center">🔒 Your data is 100% secure. No spam.</p>
           </div>
@@ -952,10 +890,12 @@ export default function CUOnlinePage(): React.ReactElement {
 
         </div>
 
-
+        <div className="bg-gray-200 mt-8 py-5 text-center text-gray-600 text-1xl">
+          Disclaimer: We act as a marketing service partner only. CU University hold full rights to request change or removal of any non-relevant content. Images used are for illustrative purposes and do not directly represent the respective colleges or universities.
+        </div>
         {/* Bottom Copyright */}
         <div className="bg-gray-200 mt-8 py-5 text-center text-gray-600 text-sm">
-          © 2026 Chandigarh University Online. All Rights Reserved.
+          © 2026 onlineadmission.online. All Rights Reserved.
         </div>
 
       </footer>

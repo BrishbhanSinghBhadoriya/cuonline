@@ -8,8 +8,6 @@ export interface IEnquiry extends Document {
   program: string;
   state?: string;
   city: string;
-  dob: string;
-  passed12th: boolean;
   message?: string;
   status: "new" | "contacted" | "enrolled" | "not_interested";
   source: string;
@@ -54,15 +52,6 @@ const EnquirySchema = new Schema<IEnquiry>(
       required: [true, "City is required"],
       trim: true,
     },
-    dob: {
-      type: String,
-      required: [true, "Date of birth is required"],
-      trim: true,
-    },
-    passed12th: {
-      type: Boolean,
-      required: [true, "Checkbox confirmation is required"],
-    },
     message: {
       type: String,
       trim: true,
@@ -94,7 +83,12 @@ EnquirySchema.index({ program: 1 });
 EnquirySchema.index({ createdAt: -1 });
 
 // ── Model (avoid re-compile on hot-reload) ──────────────────────────────
+// In development, we force a refresh by deleting from mongoose.models
+if (process.env.NODE_ENV === "development") {
+  delete (mongoose.models as any).Enquiry;
+}
+
 const Enquiry: Model<IEnquiry> =
-  mongoose.models.Enquiry ?? mongoose.model<IEnquiry>("Enquiry", EnquirySchema);
+  mongoose.models.Enquiry || mongoose.model<IEnquiry>("Enquiry", EnquirySchema);
 
 export default Enquiry;
