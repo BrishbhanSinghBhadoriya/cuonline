@@ -76,6 +76,22 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+
+        {/* ✅ Google Ads — beforeInteractive: race condition fix */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-17973307328"
+          strategy="beforeInteractive"
+        />
+        <Script id="google-ads" strategy="beforeInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-17973307328');
+          `}
+        </Script>
+
+        {/* SEO Schema Scripts */}
         <Script
           id="org-schema"
           type="application/ld+json"
@@ -124,62 +140,47 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "ItemList",
-              "itemListElement": [
+              itemListElement: [
                 {
                   "@type": "Course",
-                  "position": 1,
-                  "name": "Online MBA",
-                  "description": "UGC entitled online MBA program with flexible learning.",
-                  "provider": {
+                  position: 1,
+                  name: "Online MBA",
+                  description: "UGC entitled online MBA program with flexible learning.",
+                  provider: {
                     "@type": "CollegeOrUniversity",
-                    "name": "Chandigarh University Online",
-                    "sameAs": "https://www.onlinecu.in"
-                  }
+                    name: "Chandigarh University Online",
+                    sameAs: "https://www.onlinecu.in",
+                  },
                 },
                 {
                   "@type": "Course",
-                  "position": 2,
-                  "name": "Online MCA",
-                  "description": "Advanced online MCA program for technology professionals.",
-                  "provider": {
+                  position: 2,
+                  name: "Online MCA",
+                  description: "Advanced online MCA program for technology professionals.",
+                  provider: {
                     "@type": "CollegeOrUniversity",
-                    "name": "Chandigarh University Online",
-                    "sameAs": "https://www.onlinecu.in"
-                  }
+                    name: "Chandigarh University Online",
+                    sameAs: "https://www.onlinecu.in",
+                  },
                 },
                 {
                   "@type": "Course",
-                  "position": 3,
-                  "name": "Online BBA",
-                  "description": "Comprehensive online BBA program for future business leaders.",
-                  "provider": {
+                  position: 3,
+                  name: "Online BBA",
+                  description: "Comprehensive online BBA program for future business leaders.",
+                  provider: {
                     "@type": "CollegeOrUniversity",
-                    "name": "Chandigarh University Online",
-                    "sameAs": "https://www.onlinecu.in"
-                  }
-                }
-              ]
+                    name: "Chandigarh University Online",
+                    sameAs: "https://www.onlinecu.in",
+                  },
+                },
+              ],
             }),
           }}
         />
       </head>
       <body className={`${poppins.variable} font-sans antialiased`}>
         {children}
-
-        {/* ✅ CU Online Google Ads Scripts - AW-XXXXXXXXX replace karo */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=AW-17973307328"
-          strategy="afterInteractive"
-        />
-        <Script id="google-ads" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'AW-17973307328');
-          `}
-        </Script>
-
       </body>
     </html>
   );

@@ -20,20 +20,33 @@ interface FormData {
 
 export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props): React.ReactElement | null {
   const router = useRouter();
-  const programOptions = useMemo(
-    () => [
-      "MBA",
-      "MCA",
-      "M.Sc Data Science",
-      "BCA",
-      "BBA",
-      "MA English",
-      "BA",
-      "M.Com",
-      "M.Sc Mathematics",
-    ],
-    []
-  );
+ const programOptions = useMemo(
+  () => [
+    "Master of Business Administration – (General)",
+    "Master of Computer Applications",
+
+    "Bachelor of Business Administration",
+    "Bachelor of Computer Applications",
+
+    "Master of Science  (Data Science)",
+    "Master of Science  (Mathematics)",
+
+   
+    "Bachelor of Arts  (Journalism and Mass Communication)",
+
+    "Master of Business Administration (Business Analytics)",
+    "Master of Arts  (Economics)",
+    "Master of Arts  (English)",
+    "Master of Arts  (Journalism and Mass Communication)",
+
+    "Bachelor of Business Administration (Business Analytics)",
+
+    "MBA X in Collaboration with HBS Online"
+  ],
+  []
+);
+    
+  
 
   const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'));
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -52,12 +65,14 @@ export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props)
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
+  const [showPrograms, setShowPrograms] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setData((d) => ({ ...d, program: defaultProgram || d.program }));
       setError("");
       setSuccess("");
+      setShowPrograms(false);
     }
   }, [isOpen, defaultProgram]);
 
@@ -178,19 +193,44 @@ export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props)
               />
 
               <div className="relative">
-                <select
-                  value={data.program}
-                  onChange={update("program")}
-                  className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-500 transition-all text-gray-700 bg-white"
+                <button
+                  type="button"
+                  onClick={() => setShowPrograms((s) => !s)}
+                  className="w-full text-left border border-gray-300 rounded-lg px-4 py-3 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-500 transition-all text-gray-700 bg-white flex items-center justify-between"
+                  aria-haspopup="listbox"
+                  aria-expanded={showPrograms}
                 >
-                  <option value="">Select Program</option>
-                  {programOptions.map((p) => (
-                    <option key={p} value={p}>{p}</option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-400 text-[10px]">
-                  ▼
-                </div>
+                  <span className="block truncate pr-6">
+                    {data.program ? data.program : "Select Program"}
+                  </span>
+                  <span className="ml-2 text-gray-400 text-[10px]">▼</span>
+                </button>
+                {showPrograms && (
+                  <div
+                    role="listbox"
+                    className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto thin-scroll"
+                  >
+                    {programOptions.map((p) => {
+                      const selected = p === data.program;
+                      return (
+                        <div
+                          key={p}
+                          role="option"
+                          aria-selected={selected}
+                          onClick={() => {
+                            setData((d) => ({ ...d, program: p }));
+                            setShowPrograms(false);
+                          }}
+                          className={`px-4 py-2 text-xs md:text-sm leading-snug cursor-pointer hover:bg-red-50 ${
+                            selected ? "bg-red-50 text-red-700 font-semibold" : "text-gray-800"
+                          }`}
+                        >
+                          {p}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
 

@@ -9,12 +9,26 @@ export default function ThankYouPage() {
     useEffect(() => {
         setMounted(true);
 
-        // ✅ Google Ads Conversion Fire
-        if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
-            (window as any).gtag("event", "conversion", {
-                send_to: "AW-17973307328/5ZjRCKLOiIEcEMDPq_pC",
-            });
-        }
+        let attempts = 0;
+
+        const fireConversion = () => {
+            if (typeof (window as any).gtag === "function") {
+                (window as any).gtag("event", "conversion", {
+                    send_to: "AW-17973307328/5ZjRCKLOiIEcEMDPq_pC",
+                });
+            } else if (attempts < 20) {
+                attempts++;
+                setTimeout(fireConversion, 100);
+            } else {
+                (window as any).dataLayer = (window as any).dataLayer || [];
+                (window as any).dataLayer.push({
+                    event: "conversion",
+                    send_to: "AW-17973307328/5ZjRCKLOiIEcEMDPq_pC",
+                });
+            }
+        };
+
+        fireConversion();
     }, []);
 
     if (!mounted) return null;
@@ -53,7 +67,9 @@ export default function ThankYouPage() {
 
                     <div className="bg-gray-50 rounded-2xl p-6 md:p-8 mb-10 border border-gray-100">
                         <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
-                            Our expert academic counselor will contact you within <span className="text-red-600 font-bold">24 hours</span> to assist you with your career goals.
+                            Our expert academic counselor will contact you within{" "}
+                            <span className="text-red-600 font-bold">24 hours</span> to assist
+                            you with your career goals.
                         </p>
                     </div>
 
