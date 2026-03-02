@@ -288,7 +288,7 @@ export default function CUOnlinePage(): React.ReactElement {
         {/* Background Image (behind content) */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/cuonline_hero.png"
+            src="/hero.jpeg"
             alt="Background"
             fill
             priority
