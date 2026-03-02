@@ -12,6 +12,8 @@ interface EnquiryPayload {
   state?: string;
   city: string;
   message?: string;
+  sourceId?: string;
+  source?: string;
 }
 
 // ── Validation ─────────────────────────────────────────────────────────
@@ -122,6 +124,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: validationError }, { status: 400 });
     }
 
+    const sourceFromHeader = request.headers.get("referer") || "website";
+
     const data: EnquiryPayload = {
       name: body.name.trim(),
       email: body.email.trim().toLowerCase(),
@@ -130,6 +134,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       state: body.state?.trim() || "",
       city: body.city.trim(),
       message: body.message?.trim() || "",
+      sourceId: body.sourceId?.trim() || "",
+      source: body.source?.trim() || sourceFromHeader,
     };
 
     const ipAddress =
@@ -138,23 +144,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       "unknown";
 
     let leadId = "";
-    let dbSaved = false;
     try {
       await connectDB();
-
-      // DIAGNOSTIC: Log the schema of the model to see if it still expects dob/passed12th
-      // const schemaPaths = Object.keys(Enquiry.schema.paths);
-      // console.log("[API Log]: Enquiry Schema Paths:", schemaPaths);
 
       const enquiry = await Enquiry.create({
         ...data,
         status: "new",
-        source: "website",
         ipAddress,
       });
 
       leadId = (enquiry._id as unknown as string).toString();
-      dbSaved = true;
     } catch (dbErr) {
       console.error("[Enquiry DB Save Error]:", dbErr);
       return NextResponse.json({

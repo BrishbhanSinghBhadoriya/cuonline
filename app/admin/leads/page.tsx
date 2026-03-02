@@ -12,6 +12,7 @@ interface Lead {
   message?: string;
   status: "new" | "contacted" | "enrolled" | "not_interested";
   source: string;
+  sourceId?: string;
   createdAt: string;
 }
 
@@ -242,7 +243,7 @@ export default function AdminLeadsPage(): React.ReactElement {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200">
-                    {["Name", "Contact", "Program", "State", "Status", "Date", "Actions"].map((h) => (
+                    {["Name", "Contact", "Program", "State", "Source", "Source ID", "Status", "Date", "Actions"].map((h) => (
                       <th key={h} className="text-left px-4 py-3 font-bold text-gray-600 text-xs uppercase tracking-wide whitespace-nowrap">
                         {h}
                       </th>
@@ -275,6 +276,10 @@ export default function AdminLeadsPage(): React.ReactElement {
                           </span>
                         </td>
                         <td className="px-4 py-3 text-gray-600 text-xs">{lead.state}</td>
+                        <td className="px-4 py-3 text-gray-600 text-[10px] max-w-[150px] truncate" title={lead.source}>
+                          {lead.source || "website"}
+                        </td>
+                        <td className="px-4 py-3 text-gray-600 text-xs">{lead.sourceId || "—"}</td>
                         <td className="px-4 py-3">
                           <select
                             value={lead.status}

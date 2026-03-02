@@ -3,25 +3,49 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+// ── Window Extension ───────────────────────────────────────────────────
+declare global {
+    interface Window {
+        fbq?: (...args: unknown[]) => void;
+        gtag?: (...args: unknown[]) => void;
+        dataLayer?: unknown[];
+    }
+}
+
 export default function ThankYouPage() {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
+    }, []);
 
+    useEffect(() => {
+        if (!mounted) return;
+
+        // ✅ Meta Pixel — Lead Event
+        if (typeof window.fbq === "function") {
+            window.fbq("track", "LeadNew");
+        }
+
+        // ✅ Google Ads — Conversion Event
         let attempts = 0;
 
         const fireConversion = () => {
-            if (typeof (window as any).gtag === "function") {
-                (window as any).gtag("event", "conversion", {
+            if (typeof window.gtag === "function") {
+                window.gtag("event", "conversion", {
                     send_to: "AW-17973307328/5ZjRCKLOiIEcEMDPq_pC",
                 });
             } else if (attempts < 20) {
                 attempts++;
                 setTimeout(fireConversion, 100);
+            } else if (window.dataLayer) {
+                window.dataLayer.push({
+                    event: "conversion",
+                    send_to: "AW-17973307328/5ZjRCKLOiIEcEMDPq_pC",
+                });
             } else {
-                (window as any).dataLayer = (window as any).dataLayer || [];
-                (window as any).dataLayer.push({
+                window.dataLayer = [];
+                window.dataLayer.push({
                     event: "conversion",
                     send_to: "AW-17973307328/5ZjRCKLOiIEcEMDPq_pC",
                 });
@@ -29,7 +53,7 @@ export default function ThankYouPage() {
         };
 
         fireConversion();
-    }, []);
+    }, [mounted]);
 
     if (!mounted) return null;
 
@@ -41,18 +65,8 @@ export default function ThankYouPage() {
                 <div className="p-8 md:p-12 text-center text-gray-900">
                     <div className="mb-8 flex justify-center">
                         <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center animate-bounce">
-                            <svg
-                                className="w-12 h-12 text-green-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="3"
-                                    d="M5 13l4 4L19 7"
-                                />
+                            <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
                     </div>

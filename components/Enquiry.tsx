@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 interface Props {
   isOpen: boolean;
@@ -14,52 +15,41 @@ interface FormData {
   phone: string;
   program: string;
   city: string;
-
   message: string;
+  sourceId: string;
+  source: string;
 }
 
 export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props): React.ReactElement | null {
   const router = useRouter();
- const programOptions = useMemo(
-  () => [
-    "Master of Business Administration – (General)",
-    "Master of Computer Applications",
+  const searchParams = useSearchParams();
+  const programOptions = useMemo(
+    () => [
+      "Master of Business Administration – (General)",
+      "Master of Computer Applications",
+      "Bachelor of Business Administration",
+      "Bachelor of Computer Applications",
+      "Master of Science  (Data Science)",
+      "Master of Science  (Mathematics)",
+      "Bachelor of Arts  (Journalism and Mass Communication)",
+      "Master of Business Administration (Business Analytics)",
+      "Master of Arts  (Economics)",
+      "Master of Arts  (English)",
+      "Master of Arts  (Journalism and Mass Communication)",
+      "Bachelor of Business Administration (Business Analytics)",
+      "MBA X in Collaboration with HBS Online",
+    ],
+    []
+  );
 
-    "Bachelor of Business Administration",
-    "Bachelor of Computer Applications",
-
-    "Master of Science  (Data Science)",
-    "Master of Science  (Mathematics)",
-
-   
-    "Bachelor of Arts  (Journalism and Mass Communication)",
-
-    "Master of Business Administration (Business Analytics)",
-    "Master of Arts  (Economics)",
-    "Master of Arts  (English)",
-    "Master of Arts  (Journalism and Mass Communication)",
-
-    "Bachelor of Business Administration (Business Analytics)",
-
-    "MBA X in Collaboration with HBS Online"
-  ],
-  []
-);
-    
-  
-
-  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'));
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 60 }, (_, i) => (currentYear - 16 - i).toString());
-
-  const [data, setData] = useState<FormData>({
-    name: "",
+  const [data, setData] = useState<FormData>({name: "",
     email: "",
     phone: "",
     program: defaultProgram || "",
     city: "",
     message: "",
+    sourceId: "",
+    source: "",
   });
 
   const [submitting, setSubmitting] = useState(false);
@@ -69,12 +59,19 @@ export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props)
 
   useEffect(() => {
     if (isOpen) {
-      setData((d) => ({ ...d, program: defaultProgram || d.program }));
+      const sid = searchParams.get("sid") || searchParams.get("sourceId") || "";
+      const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+      setData((d) => ({ 
+        ...d, 
+        program: defaultProgram || d.program, 
+        sourceId: sid,
+        source: currentUrl
+      }));
       setError("");
       setSuccess("");
       setShowPrograms(false);
     }
-  }, [isOpen, defaultProgram]);
+  }, [isOpen, defaultProgram, searchParams]);
 
   const update = (field: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
@@ -110,6 +107,8 @@ export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props)
           program: data.program.trim(),
           city: data.city.trim(),
           message: data.message.trim(),
+          sourceId: data.sourceId.trim(),
+          source: data.source || "website",
         }),
       });
       if (!res.ok) {
@@ -170,7 +169,7 @@ export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props)
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
                   <div className="flex items-center gap-1 border-r border-gray-200 pr-2 mr-2">
-                    <img src="https://flagcdn.com/w20/in.png" alt="IN" className="w-5 h-auto rounded-sm" />
+                    <Image src="https://flagcdn.com/w20/in.png" alt="IN" width={20} height={15} className="h-auto rounded-sm" />
                     <span className="text-gray-600 text-sm font-medium">+91</span>
                     <span className="text-gray-400 text-[10px]">▼</span>
                   </div>

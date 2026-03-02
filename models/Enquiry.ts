@@ -11,6 +11,7 @@ export interface IEnquiry extends Document {
   message?: string;
   status: "new" | "contacted" | "enrolled" | "not_interested";
   source: string;
+  sourceId?: string;
   ipAddress?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -66,6 +67,10 @@ const EnquirySchema = new Schema<IEnquiry>(
       type: String,
       default: "website",
     },
+    sourceId: {
+      type: String,
+      trim: true,
+    },
     ipAddress: {
       type: String,
     },
@@ -85,7 +90,7 @@ EnquirySchema.index({ createdAt: -1 });
 // ── Model (avoid re-compile on hot-reload) ──────────────────────────────
 // In development, we force a refresh by deleting from mongoose.models
 if (process.env.NODE_ENV === "development") {
-  delete (mongoose.models as any).Enquiry;
+  delete (mongoose.models as Record<string, Model<IEnquiry>>).Enquiry;
 }
 
 const Enquiry: Model<IEnquiry> =
