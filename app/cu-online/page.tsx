@@ -1,5 +1,5 @@
-"use client";
-import { useState, useCallback } from "react";
+  "use client";
+import { useState, useCallback, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Enquiry from "@/components/Enquiry";
 import Image from "next/image";
@@ -252,11 +252,13 @@ export default function CUOnlinePage(): React.ReactElement {
     <div className="min-h-screen bg-white">
 
       {/* ═══ ENQUIRY MODAL — single instance, used everywhere ═══════════ */}
-      <Enquiry
-        isOpen={modalOpen}
-        onClose={closeModal}
-        defaultProgram={selectedProgram}
-      />
+      <Suspense fallback={null}>
+        <Enquiry
+          isOpen={modalOpen}
+          onClose={closeModal}
+          defaultProgram={selectedProgram}
+        />
+      </Suspense>
 
       {/* ─── FLOATING ENQUIRE BUTTON (always visible) ────────────────── */}
       <div className="fixed bottom-6 right-6 z-50">
