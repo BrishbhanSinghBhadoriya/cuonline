@@ -162,6 +162,43 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }, { status: 500 });
     }
 
+    // ── CRM Integration ────────────────────────────────────────────────────
+    const crmEndpoint = process.env.API_ENDPOINT;
+    if (crmEndpoint) {
+      try {
+        const crmPayload = {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          program: data.program,
+          city: data.city,
+          state: data.state || "",
+          message: data.message || "",
+          source: data.source || "website",
+          sourceId: data.sourceId || "",
+          status: "new",
+          ipAddress: ipAddress
+        };
+
+        const response = await fetch(crmEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(crmPayload),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`[CRM API Error]: ${response.status} - ${errorText}`);
+        } else {
+          console.log("[CRM Sync Successful]");
+        }
+      } catch (crmErr) {
+        console.error("[CRM API Request Failed]:", crmErr);
+      }
+    }
+
     const enableEmails = process.env.SEND_EMAILS === "true";
     if (enableEmails) {
       try {
