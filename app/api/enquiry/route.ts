@@ -14,6 +14,8 @@ interface EnquiryPayload {
   message?: string;
   sourceId?: string;
   source?: string;
+  campaign?: string;
+  university?: string;
 }
 
 // ── Validation ─────────────────────────────────────────────────────────
@@ -125,6 +127,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const sourceFromHeader = request.headers.get("referer") || "website";
+    const computeCampaign = (src: string | undefined, headerSrc: string): string => {
+      const raw = src || headerSrc || "";
+      try {
+        const u = new URL(raw);
+        const p = u.pathname || "/";
+        if (p === "/" || p === "") return "Google_Search";
+        if (p.startsWith("/cu-online")) return "Meta_Search";
+      } catch {
+        // ignore parse errors and fallback to string heuristics
+      }
+      const s = raw.toLowerCase();
+      if (s.includes("utm_source=google") || s.includes("gclid") || s.includes("google")) return "Google_Search";
+      return "Meta_Search";
+    };
 
     const data: EnquiryPayload = {
       name: body.name.trim(),
@@ -136,6 +152,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       message: body.message?.trim() || "",
       sourceId: body.sourceId?.trim() || "",
       source: body.source?.trim() || sourceFromHeader,
+      campaign: body.campaign?.trim() || computeCampaign(body.source, sourceFromHeader),
+      university: body.university?.trim() || "Chandigarh University",
     };
 
     const ipAddress =
@@ -172,12 +190,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           phone: data.phone,
           program: data.program,
           city: data.city,
-          state: data.state || "",
-          message: data.message || "",
           source: data.source || "website",
-          sourceId: data.sourceId || "",
-          status: "new",
-          ipAddress: ipAddress
+          campaign: data.campaign || "Meta_Search",
+          university: data.university || "Chandigarh University",
         };
 
         const response = await fetch(crmEndpoint, {

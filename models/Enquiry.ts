@@ -9,6 +9,8 @@ export interface IEnquiry extends Document {
   state?: string;
   city: string;
   message?: string;
+  campaign?: string;
+  university?: string;
   status: "new" | "contacted" | "enrolled" | "not_interested";
   source: string;
   sourceId?: string;
@@ -57,6 +59,16 @@ const EnquirySchema = new Schema<IEnquiry>(
       type: String,
       trim: true,
       default: "",
+    },
+    campaign: {
+      type: String,
+      trim: true,
+      default: "Meta_Search",
+    },
+    university: {
+      type: String,
+      trim: true,
+      default: "Chandigarh University",
     },
     status: {
       type: String,
