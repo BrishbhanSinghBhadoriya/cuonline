@@ -29,7 +29,7 @@ function programFullForm(title: string): string {
   if (t.includes("m.com")) return "Master of Commerce";
   if (t.includes("bba")) return "Bachelor of Business Administration";
   if (t.includes("bca")) return "Bachelor of Computer Applications";
-  if (t.includes("ba")) return "Bachelor of Arts";
+  if (t.includes("ba jmc")) return "Bachelor of Arts (Journalism and Mass Communication)";
   if (t.includes("bba business analytics")) return "Bachelor of Business Administration (Business Analytics)";
   return "";
 }
@@ -173,7 +173,7 @@ export default function CUOnlinePage(): React.ReactElement {
     "BCA",
     "BBA",
     "MA English",
-    "BA",
+    "BA-JMC",
     "M.Com",
     "M.Sc Mathematics",
   ];
