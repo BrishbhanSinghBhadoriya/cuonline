@@ -229,7 +229,7 @@ export default function CUOnlinePage(): React.ReactElement {
       setHeroData({ name: "", email: "", phone: "", program: "", city: "" });
       setTimeout(() => {
         router.push("/thank-you");
-      }, 1000);
+      }, 150);
     } catch (e) {
       setHeroError(e instanceof Error ? e.message : "Submission failed");
     } finally {

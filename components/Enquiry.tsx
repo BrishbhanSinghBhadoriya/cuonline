@@ -119,7 +119,7 @@ export default function Enquiry({ isOpen, onClose, defaultProgram = "" }: Props)
       setTimeout(() => {
         onClose();
         router.push("/thank-you");
-      }, 1000);
+      }, 150);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Submission failed");
     } finally {

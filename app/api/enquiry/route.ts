@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import nodemailer from "nodemailer";
 import { connectDB } from "@/lib/mongodb";
 import Enquiry from "@/models/Enquiry";
@@ -161,90 +162,87 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       request.headers.get("x-real-ip") ||
       "unknown";
 
-    let leadId = "";
-    try {
-      await connectDB();
-
-      const enquiry = await Enquiry.create({
-        ...data,
-        status: "new",
-        ipAddress,
-      });
-
-      leadId = (enquiry._id as unknown as string).toString();
-    } catch (dbErr) {
-      console.error("[Enquiry DB Save Error]:", dbErr);
-      return NextResponse.json({
-        error: "Failed to save enquiry to database.",
-        details: dbErr instanceof Error ? dbErr.message : String(dbErr)
-      }, { status: 500 });
-    }
-
-    // ── CRM Integration ────────────────────────────────────────────────────
-    const crmEndpoint = process.env.API_ENDPOINT;
-    if (crmEndpoint) {
+    // Response goes out first; Mongo → CRM → emails run afterward (Next.js `after`).
+    after(async () => {
+      let leadId = "";
       try {
-        const crmPayload = {
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          program: data.program,
-          city: data.city,
-          source: data.source || "website",
-          campaign: data.campaign || "Meta_Search",
-          university: data.university || "Chandigarh University",
-        };
-
-        const response = await fetch(crmEndpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(crmPayload),
+        await connectDB();
+        const enquiry = await Enquiry.create({
+          ...data,
+          status: "new",
+          ipAddress,
         });
+        leadId = (enquiry._id as unknown as string).toString();
+      } catch (dbErr) {
+        console.error("[Enquiry DB Save Error] (after success response):", dbErr);
+        return;
+      }
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`[CRM API Error]: ${response.status} - ${errorText}`);
-        } else {
-          console.log("[CRM Sync Successful]");
+      const crmEndpoint = process.env.API_ENDPOINT;
+      if (crmEndpoint) {
+        try {
+          const crmPayload = {
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            program: data.program,
+            city: data.city,
+            source: data.source || "website",
+            campaign: data.campaign || "Meta_Search",
+            university: data.university || "Chandigarh University",
+          };
+
+          const response = await fetch(crmEndpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(crmPayload),
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`[CRM API Error]: ${response.status} - ${errorText}`);
+          } else {
+            console.log("[CRM Sync Successful]");
+          }
+        } catch (crmErr) {
+          console.error("[CRM API Request Failed]:", crmErr);
         }
-      } catch (crmErr) {
-        console.error("[CRM API Request Failed]:", crmErr);
       }
-    }
 
-    const enableEmails = process.env.SEND_EMAILS === "true";
-    if (enableEmails) {
-      try {
-        const transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_APP_PASSWORD || process.env.EMAIL_PASS,
-          },
-        });
-        await Promise.all([
-          transporter.sendMail({
-            from: `"CU Online Leads" <${process.env.EMAIL_USER}>`,
-            to: process.env.ADMIN_EMAIL,
-            subject: `🎓 New Lead: ${data.name} — ${data.program}`,
-            html: adminEmailHTML(data, leadId),
-          }),
-          transporter.sendMail({
-            from: `"CU Online Admissions" <${process.env.EMAIL_USER}>`,
-            to: data.email,
-            subject: `✅ Enquiry Confirmed — ${data.program} | CU Online`,
-            html: studentEmailHTML(data),
-          }),
-        ]);
-      } catch (emailErr) {
-        console.error("⚠️ Email failed (lead already saved to DB):", emailErr);
+      const enableEmails = process.env.SEND_EMAILS === "true";
+      if (enableEmails) {
+        try {
+          const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: process.env.EMAIL_USER,
+              pass: process.env.EMAIL_APP_PASSWORD || process.env.EMAIL_PASS,
+            },
+          });
+          await Promise.all([
+            transporter.sendMail({
+              from: `"CU Online Leads" <${process.env.EMAIL_USER}>`,
+              to: process.env.ADMIN_EMAIL,
+              subject: `🎓 New Lead: ${data.name} — ${data.program}`,
+              html: adminEmailHTML(data, leadId),
+            }),
+            transporter.sendMail({
+              from: `"CU Online Admissions" <${process.env.EMAIL_USER}>`,
+              to: data.email,
+              subject: `✅ Enquiry Confirmed — ${data.program} | CU Online`,
+              html: studentEmailHTML(data),
+            }),
+          ]);
+        } catch (emailErr) {
+          console.error("⚠️ Email failed (lead saved):", emailErr);
+        }
       }
-    }
+    });
 
     return NextResponse.json(
-      { success: true, message: "Enquiry submitted successfully!", leadId },
+      { success: true, message: "Enquiry submitted successfully!", leadId: "" },
       { status: 201 }
     );
   } catch (error: unknown) {
